@@ -1,0 +1,36 @@
+bundle:
+  name: cow_bff
+
+include:
+  - resources/*.yml
+
+targets:
+  development:
+    default: true
+    workspace:
+      host: https://adb-1966697730403610.10.azuredatabricks.net/
+
+
+  qa:
+    workspace:
+      host: https://adb-1966697730403610.10.azuredatabricks.net/ # can be different from dev
+    resources:
+      jobs:
+        daily_report:
+          name: "[${bundle.target}] Cow BFF report"
+
+  production:
+    workspace:
+      host: https://adb-52629278589594.14.azuredatabricks.net/
+    resources:
+      jobs:
+        daily_report:
+          name: "[${bundle.target}] Cow BFF report"
+          job_clusters:
+            - job_cluster_key: daily_report
+              new_cluster:
+                spark_version: 14.3.x-scala2.12
+                node_type_id: Standard_DS3_v2
+                autoscale:
+                  max_workers: 10
+                  min_workers: 1
