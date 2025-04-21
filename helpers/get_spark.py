@@ -27,7 +27,7 @@ from pyspark.sql.functions import col, current_date, lit, sum, when
 
 
 def dbcn_cfg():
-    config = Config(cluster_id="0421-121403-muvc6pnx", profile="dev")
+    config = Config(cluster_id="<cluster_id>", profile="<profile>")
     return config
 
 
