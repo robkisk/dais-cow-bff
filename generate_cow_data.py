@@ -19,21 +19,21 @@ from helpers.get_spark import init_spark
 spark = init_spark()
 
 
-# COMMAND ----------
-parser = argparse.ArgumentParser("simple_example")
-parser.add_argument("--catalog", help="Catalog to use", type=str)
-parser.add_argument("--schema", help="Schema to use", type=str)
-parser.add_argument("--envsubpath", help="sub_path to use", type=str)
-parser.add_argument("--container", help="container to use", type=str)
-parser.add_argument("--storageacct", help="storage account to use", type=str)
-args = parser.parse_args()
-
-catalog_name = str(args.catalog)
-schema_name = str(args.schema)
-envsubpath = str(args.envsubpath)
-container = str(args.container)
-storageacct = str(args.storageacct)
-
+# # COMMAND ----------
+# parser = argparse.ArgumentParser("simple_example")
+# parser.add_argument("--catalog", help="Catalog to use", type=str)
+# parser.add_argument("--schema", help="Schema to use", type=str)
+# parser.add_argument("--envsubpath", help="sub_path to use", type=str)
+# parser.add_argument("--container", help="container to use", type=str)
+# parser.add_argument("--storageacct", help="storage account to use", type=str)
+# args = parser.parse_args()
+#
+# catalog_name = str(args.catalog)
+# schema_name = str(args.schema)
+# envsubpath = str(args.envsubpath)
+# container = str(args.container)
+# storageacct = str(args.storageacct)
+#
 # COMMAND ----------
 # debugging with dbconnect interactive jupyter only
 # catalog_name = "bu1_dev"
@@ -43,9 +43,9 @@ storageacct = str(args.storageacct)
 # storageacct = "storaccrobkisk"
 
 # COMMAND ----------
-adls_root_path = f"abfss://{container}@{storageacct}.dfs.core.windows.net"
-table_name = f"{catalog_name}.{schema_name}.cows_bff"
-tbl_sub_path = f"demo_folder_root/{envsubpath}/cows_bff"
+# adls_root_path = f"abfss://prod@{storageacct}.dfs.core.windows.net"
+table_name = "bu1_dev.default.cows_bff"
+# tbl_sub_path = f"demo_folder_root/{envsubpath}/cows_bff"
 
 # COMMAND ----------
 # spark.sql(
@@ -175,7 +175,8 @@ spark_df.show(10)
 # create external table
 spark_df.write.format("delta").mode("overwrite").option(
     "overwriteSchema", "true"
-).option("path", f"{adls_root_path}/{tbl_sub_path}").saveAsTable(table_name)
+).saveAsTable(table_name)
+# .option("path", f"{adls_root_path}/{tbl_sub_path}").saveAsTable(table_name)
 
 # COMMAND ----------
 spark.table(table_name).show(5)

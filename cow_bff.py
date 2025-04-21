@@ -1,12 +1,3 @@
-# Databricks notebook source
-# COMMAND ----------
-
-# MAGIC %pip install polars==1.6.0
-
-# COMMAND ----------
-# MAGIC %pip install -r ./requirements.txt
-
-
 # COMMAND ----------
 
 from datetime import datetime, timedelta
@@ -24,19 +15,21 @@ from helpers.heatmap import compute_heatmap
 
 spark = init_spark()
 
-# COMMAND ----------
-catalog_name = dbutils.widgets.get("catalog")
-schema_name = dbutils.widgets.get("schema")
+spark.sql("select current_version()").show(10, False)
 
 # COMMAND ----------
+# catalog_name = dbutils.widgets.get("catalog")
+# schema_name = dbutils.widgets.get("schema")
+
 # catalog_name = "bu1_dev"
-# schema_name = "proj1_schema"
+# schema_name = "default"
 
 
 # COMMAND ----------
 # catalog_name = "bu1_dev"
 # schema_name = "proj_schema1"  # make this break for run-repair with bundle deploy
-table_name = f"{catalog_name}.{schema_name}.cows_bff"
+# table_name = f"{catalog_name}.{schema_name}.cows_bff"
+table_name = "bu1_dev.default.cows_bff"
 
 # COMMAND ----------
 cows_bff = spark.read.table(f"{table_name}")
@@ -45,8 +38,7 @@ cows_bff.show(5)
 # COMMAND ----------
 
 df = compute_heatmap(cows_bff)
-display(df.limit(10))
-df.show(10, False)
+df.limit(10).show(10, False)
 
 # COMMAND ----------
 pdf = df.toPandas()
