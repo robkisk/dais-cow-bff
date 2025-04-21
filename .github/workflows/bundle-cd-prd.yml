@@ -1,0 +1,31 @@
+name: "Deploy Cow Bundle to Production"
+
+concurrency: 1
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ARM_TENANT_ID: ${{ secrets.PRD_AZURE_SP_TENANT_ID }}
+  ARM_CLIENT_ID: ${{ secrets.PRD_AZURE_SP_APPLICATION_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.PRD_AZURE_SP_CLIENT_SECRET }}
+  DATABRICKS_BUNDLE_ENV: prod
+
+jobs:
+  deploy:
+    name: "Deploy bundle on Push to PROD and Run in Production"
+    environment: production
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: databricks/setup-cli@v0.225.0
+      - name: Validate Bundle For Production
+        id: validate
+        run: databricks bundle validate
+      - name: Deploy bundle
+        run: databricks bundle deploy
+      - name: Run notebook
+        run: databricks bundle run jobs.daily_report

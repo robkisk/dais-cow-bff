@@ -1,0 +1,36 @@
+bundle:
+  name: cow_bff
+
+include:
+  - resources/*.yml
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://adb-4410479699737146.6.azuredatabricks.net
+  qa:
+    workspace:
+      host: https://adb-984943348579571.11.azuredatabricks.net
+    resources:
+      jobs:
+        daily_report:
+          name: "[${bundle.target}] Cow BFF Report"
+    run_as:
+      service_principal_name: 51408da0-0abe-4a71-84e8-4fda2697bbdf
+  prod:
+    workspace:
+      host: https://adb-2029549305723961.1.azuredatabricks.net
+      # root_path: /Users/robby.kiskanyan@databricks.com/.bundle/prod/${bundle.name}
+    resources:
+      jobs:
+        daily_report:
+          name: "[${bundle.target}] Cow BFF report"
+    run_as:
+      service_principal_name: 44dce1ec-a6a3-4f4e-9fb7-0bf9de2addd5
+# utils outside of bundle but relative to bundle
+# /Users/robby.kiskanyan@databricks.com/utils/get_spark.py
+# sync:
+#   paths:
+#     # - /Users/robby.kiskanyan@databricks.com/utils/get_spark.py
+#     - ../get_spark.py

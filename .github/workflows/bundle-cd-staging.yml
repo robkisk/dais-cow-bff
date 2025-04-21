@@ -1,0 +1,54 @@
+name: "Deploy Cow bundle to Staging"
+
+concurrency: 1
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+
+env:
+  ARM_TENANT_ID: ${{ secrets.STAGING_AZURE_SP_TENANT_ID }}
+  ARM_CLIENT_ID: ${{ secrets.STAGING_AZURE_SP_APPLICATION_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.STAGING_AZURE_SP_CLIENT_SECRET }}
+  DATABRICKS_BUNDLE_ENV: qa
+
+jobs:
+  deploy:
+    name: "Deploy Cow Bundle on PR to QA"
+    environment: development
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: databricks/setup-cli@v0.225.0
+      - name: Validate bundle
+        run: databricks bundle validate
+      - name: Deploy bundle
+        run: databricks bundle deploy
+      - name: Run bundle
+        run: databricks bundle run daily_report
+
+  # unit-tests:
+  #   name: "Unit tests"
+  #   environment: development
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     DATABRICKS_CLUSTER_ID: ${{ vars.DATABRICKS_CLUSTER_ID }}
+  #     DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+  #     ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} # uses a service principal for databricks-connect
+  #     ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # uses a service principal for databricks-connect
+  #     ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # uses a service principal for databricks-connect
+  #
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.11'
+  #         cache: 'pip'
+  #     - run: pip install -r requirements.txt
+  #     - name: Run unit tests
+  #       run: pytest -s -v tests/ --disable-warnings

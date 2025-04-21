@@ -1,0 +1,83 @@
+variables:
+  catalog:
+    description: catalog to use
+    default: bu1_dev
+  schema:
+    description: schema to use
+    default: proj1_schema
+  container:
+    description: adls container location
+    default: prod
+  storage_account:
+    description: adls storage account
+    default: storaccrobkisk
+  envsubpath:
+    description: adls sub path based on env
+    default: dev
+targets:
+  dev:
+    variables:
+      catalog: bu1_dev
+      schema: proj1_schema
+      envsubpath: dev
+  qa:
+    variables:
+      catalog: bu1_qa
+      schema: proj1_schema
+      envsubpath: qa
+  prod:
+    variables:
+      catalog: bu1_prod
+      schema: proj1_schema
+      envsubpath: prod
+resources:
+  jobs:
+    daily_report:
+      name: "[${bundle.target} - ${workspace.current_user.userName}] Cow BFF Report"
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+        - name: bundle_target
+          default: ${bundle.target}
+        - name: container
+          default: ${var.container}
+        - name: storage_account
+          default: ${var.storage_account}
+        - name: envsubpath
+          default: ${var.envsubpath}
+      tasks:
+        - task_key: generate_cow_data
+          spark_python_task:
+            python_file: "../generate_cow_data.py"
+            parameters:
+              - --catalog
+              - "{{job.parameters.catalog}}"
+              - --schema
+              - "{{job.parameters.schema}}"
+              - --env
+              - "${bundle.target}"
+              - --container
+              - "{{job.parameters.container}}"
+              - --storageacct
+              - "{{job.parameters.storage_account}}"
+              - --envsubpath
+              - "{{job.parameters.envsubpath}}"
+          environment_key: default
+        - task_key: cow_post_processing
+          depends_on:
+            - task_key: generate_cow_data
+          notebook_task:
+            notebook_path: "../cow_bff.py"
+            base_parameters:
+              catalog: "{{job.parameters.catalog}}"
+              schema: "{{job.parameters.schema}}"
+      environments:
+        - environment_key: default
+          spec:
+            client: "1"
+            dependencies:
+              - cowsay
+              - polars
+              - databricks-sdk
