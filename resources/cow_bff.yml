@@ -4,7 +4,7 @@ variables:
     default: bu1_dev
   schema:
     description: schema to use
-    default: proj1_schema
+    default: default
   container:
     description: adls container location
     default: prod
@@ -18,7 +18,7 @@ targets:
   dev:
     variables:
       catalog: bu1_dev
-      schema: proj1_schema
+      schema: default
       envsubpath: dev
   qa:
     variables:
@@ -49,6 +49,7 @@ resources:
           default: ${var.envsubpath}
       tasks:
         - task_key: generate_cow_data
+          environment_key: default
           spark_python_task:
             python_file: "../generate_cow_data.py"
             parameters:
@@ -64,7 +65,6 @@ resources:
               - "{{job.parameters.storage_account}}"
               - --envsubpath
               - "{{job.parameters.envsubpath}}"
-          environment_key: default
         - task_key: cow_post_processing
           depends_on:
             - task_key: generate_cow_data
@@ -73,11 +73,12 @@ resources:
             base_parameters:
               catalog: "{{job.parameters.catalog}}"
               schema: "{{job.parameters.schema}}"
+      budget_policy_id: "519b3d2c-d110-417f-90fc-8629f92cff12"
       environments:
         - environment_key: default
           spec:
-            client: "1"
+            client: "2"
             dependencies:
               - cowsay
-              - polars
-              - databricks-sdk
+              - polars==1.27.1
+            #   - databricks-sdk

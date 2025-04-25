@@ -14,7 +14,7 @@
 
 from datetime import datetime, timedelta
 
-import polars as pl
+# import polars as pl
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -31,8 +31,13 @@ def dbcn_cfg():
     return config
 
 
+# def init_spark():
+#     spark = DatabricksSession.builder.sdkConfig(dbcn_cfg()).getOrCreate()
+#     print(spark.conf.get("spark.databricks.workspaceUrl"))
+#     print(spark.conf.get("spark.databricks.clusterUsageTags.clusterId"))
+#     return spark
+
+
 def init_spark():
-    spark = DatabricksSession.builder.sdkConfig(dbcn_cfg()).getOrCreate()
-    print(spark.conf.get("spark.databricks.workspaceUrl"))
-    print(spark.conf.get("spark.databricks.clusterUsageTags.clusterId"))
+    spark = DatabricksSession.builder.getOrCreate()
     return spark

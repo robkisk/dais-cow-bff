@@ -1,3 +1,8 @@
+# Databricks notebook source
+# MAGIC %md
+# MAGIC
+# MAGIC # Sample notebook
+
 # COMMAND ----------
 
 from datetime import datetime, timedelta
@@ -5,7 +10,8 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
-import polars as pl
+
+# import polars as pl
 import pyspark.sql.functions as F
 from pyspark.sql.functions import col, current_date, lit, sum, when
 from pyspark.sql.window import Window

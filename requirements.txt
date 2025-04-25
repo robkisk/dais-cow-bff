@@ -1,0 +1,4 @@
+databricks-cli>=0.248.0
+databricks-bundles>=0.248.0
+cowsay
+polars==1.27.1 
